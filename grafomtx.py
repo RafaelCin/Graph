@@ -76,7 +76,7 @@ class GraphMtx():
       auxLis = []
     print(dic)
   
-  # Adicionar um vertice, adcionar uma aresta, se dois vertices estao ligados
+  # Adicionar um vertice (feito), adcionar uma aresta, se dois vertices estao ligados
   # Grau de entrada, grau de saida, adjacente, menor aresta, maior aresta
 
   def addVer(self, ver):
@@ -95,9 +95,30 @@ class GraphMtx():
     newMtx[len(self.keys) - 1][len(self.keys) - 1] = 1
     self.mtxOfAdj = newMtx
     print(newMtx)
+  
+  def addEdge(self, edge):
+    for element in edge:
+      if (element in self.keys) is False:
+        print('Key do not exist in Graph')
+        return ''
+    if self.directed == True or edge[0] == edge[1]:
+      indx1 = self.keys.index(edge[0])
+      indx2 = self.keys.index(edge[1])
+      self.mtxOfAdj[indx1][indx2] += 1
+    else:
+      indx1 = self.keys.index(edge[0])
+      indx2 = self.keys.index(edge[1])
+      self.mtxOfAdj[indx1][indx2] += 1
+      self.mtxOfAdj[indx2][indx1] += 1
+    print(self.mtxOfAdj)
+    
+
+
+
 
 
 graph = GraphMtx(((0,1),(0,2),(0,3),(1,2),(2,3)))
 graph.__str__()
 graph.__getitem__(3)
 graph.addVer(9)
+graph.addEdge((2,2))
