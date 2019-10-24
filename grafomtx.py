@@ -76,10 +76,10 @@ class GraphMtx():
       auxLis = []
     print(dic)
   
-  # Adicionar um vertice (feito), adcionar uma aresta, se dois vertices estao ligados
-  # Grau de entrada, grau de saida, adjacente, menor aresta, maior aresta
+  # Adicionar um vertice (feito), adcionar uma aresta(feito), se dois vertices estao ligados(feito)
+  # Grau de entrada(feito), grau de saida(feito), adjacente, menor aresta, maior aresta
 
-  def addVer(self, ver):
+  def addVer(self, ver, ligVer):
     indxi = 0
     indxj = 0
     mtx = self.mtxOfAdj
@@ -92,7 +92,14 @@ class GraphMtx():
         indxj += 1
       indxj = 0
       indxi += 1
-    newMtx[len(self.keys) - 1][len(self.keys) - 1] = 1
+    # newMtx[len(self.keys) - 1][len(self.keys) - 1] = 1
+    if ligVer in self.keys:
+      print(self.keys.index(ver))
+      newMtx[self.keys.index(ligVer)][self.keys.index(ver)] += 1
+      if self.directed is False:
+         newMtx[self.keys.index(ver)][self.keys.index(ligVer)] += 1
+    else:
+      print('vertice dado para ligação inexistente')
     self.mtxOfAdj = newMtx
     print(newMtx)
   
@@ -111,14 +118,46 @@ class GraphMtx():
       self.mtxOfAdj[indx1][indx2] += 1
       self.mtxOfAdj[indx2][indx1] += 1
     print(self.mtxOfAdj)
+  
+  def verLig(self, ver1, ver2):
+    ligation = False
+    if (ver1 in self.keys) and (ver2 in self.keys):
+      if self.mtxOfAdj[self.keys.index(ver2)][self.keys.index(ver1)] > 0 and self.mtxOfAdj[self.keys.index(ver1)][self.keys.index(ver2)]:
+        ligation = True
+    else:
+      ligation = 'some ver or both do not exist'
+    print(ligation)
+    return ligation
+  
+  def exitDegree(self, ver):
+    degree = 0
+    if (ver in self.keys) is True: 
+      for element in self.mtxOfAdj:
+        degree += element[self.keys.index(ver)]
+    print(degree)
+    return degree
+  
+  def entranceDeg(self, ver):
+    degree = 0
+    if (ver in self.keys) is True:
+      for element in self.mtxOfAdj[self.keys.index(ver)]:
+        degree += element
+    print(degree)
+    return degree
+    
     
 
 
+      
+    
 
 
 
 graph = GraphMtx(((0,1),(0,2),(0,3),(1,2),(2,3)))
 graph.__str__()
 graph.__getitem__(3)
-graph.addVer(9)
+graph.addVer(9,0)
 graph.addEdge((2,2))
+graph.verLig(1,2)
+graph.exitDegree(0)
+graph.entranceDeg(0)
