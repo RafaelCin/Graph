@@ -1,34 +1,43 @@
 import numpy as np
 
 class GraphMtx():
-  def __init__(self, objiter, directed = False, listaOfAdj = {}, mtxOfAdj = None, keys=None):
+  def __init__(self, objiter, directed = False, listaOfAdj = {}, mtxOfAdj = None, keys=None, wheght=None):
     self.directed = directed
     graphNKeys = self.createGraphMtx(objiter)
     self.mtxOfAdj = graphNKeys[0]
     self.keys = graphNKeys[1]
+    self.weight = graphNKeys[2]
   
   def createGraphMtx(self, obj):
     mtx = []
+    weight = []
     for element in obj:
+      if len(element) > 2:
+        weight.append(element[2])
       if (element[1] in mtx) is False:
         mtx.append(element[1])
       if (element[0] in mtx)  is False:
         mtx.append(element[0])
     mtxAdj = np.zeros((len(mtx), len(mtx)))
     mtx.sort()
-    finalMtx = self.buildMtx(obj, mtx)
+    finalMtx = self.buildMtx(obj, mtx, weight)
     return finalMtx
-  def buildMtx(self, obj, mtx):
+  def buildMtx(self, obj, mtx, weight):
     mtxAdj = np.zeros((len(mtx), len(mtx)))
     for element in obj:
       n0 = element[0]
       n1 = element[1]
       ind0 = mtx.index(n0)
       ind1 = mtx.index(n1)
-      mtxAdj[ind0][ind1] += 1
-      if self.directed == False:
-        mtxAdj[ind1][ind0] += 1
-    return mtxAdj, mtx
+      if len(element) < 3:
+        mtxAdj[ind0][ind1] += 1
+        if self.directed == False:
+          mtxAdj[ind1][ind0] += 1
+      else:
+        mtxAdj[ind0][ind1] += element[2]
+        if self.directed == False:
+          mtxAdj[ind1][ind0] += element[2]
+    return mtxAdj, mtx, weight
   
   def __str__(self):
     lis = []
@@ -77,7 +86,7 @@ class GraphMtx():
     print(dic)
   
   # Adicionar um vertice (feito), adcionar uma aresta(feito), se dois vertices estao ligados(feito)
-  # Grau de entrada(feito), grau de saida(feito), adjacente, menor aresta, maior aresta
+  # Grau de entrada(feito), grau de saida(feito), adjacente(feito), menor aresta(feito), maior aresta(feito)
 
   def addVer(self, ver, ligVer):
     indxi = 0
@@ -144,6 +153,65 @@ class GraphMtx():
         degree += element
     print(degree)
     return degree
+
+  def biggestEdge(self):
+    biggest = 0
+    listOfEdges = []
+    indxC = 0
+    indxL = 0
+    for element in self.mtxOfAdj:
+      for number in element:
+        if number > biggest:
+          biggest = number
+          listOfEdges = [(self.keys[indxC],self.keys[indxL])]
+        elif number == biggest:
+          listOfEdges += [(self.keys[indxC],self.keys[indxL])]
+        indxL += 1
+      indxL = 0
+      indxC += 1
+    print(listOfEdges)
+    print(biggest)
+    return listOfEdges
+
+  def smallerEdge(self):
+    listOfEdges = []
+    smaller = self.mtxOfAdj[0][0]
+    indxC = 0
+    indxL = 0
+    for element in self.mtxOfAdj:
+      for number in element:
+        
+        if number < smaller:
+          smaller = number
+          listOfEdges = [(self.keys[indxC],self.keys[indxL])]
+        elif number == smaller:
+          listOfEdges += [(self.keys[indxC],self.keys[indxL])]
+        indxL += 1
+      indxL = 0
+      indxC += 1
+    print(smaller)
+    print(listOfEdges)
+    return listOfEdges
+
+  def adjecent(self, ver):
+    listOfAdjc = []
+    indx = self.keys.index(ver)
+    indx2 = 0
+    for element in self.mtxOfAdj:
+      if element[indx] > 0:
+        listOfAdjc.append(self.keys[indx2])
+      indx2 += 1
+    print(listOfAdjc)
+    return listOfAdjc
+
+    
+
+    
+
+
+
+
+
     
     
 
@@ -153,7 +221,7 @@ class GraphMtx():
 
 
 
-graph = GraphMtx(((0,1),(0,2),(0,3),(1,2),(2,3)))
+graph = GraphMtx(((0,1,2),(0,2,7),(0,3,4),(1,2,1),(2,3,12)))
 graph.__str__()
 graph.__getitem__(3)
 graph.addVer(9,0)
@@ -161,3 +229,6 @@ graph.addEdge((2,2))
 graph.verLig(1,2)
 graph.exitDegree(0)
 graph.entranceDeg(0)
+graph.biggestEdge()
+graph.smallerEdge()
+graph.adjecent(0)

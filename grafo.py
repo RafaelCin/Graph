@@ -27,16 +27,16 @@ class Grafo():
     lis = []
     i = 0
     keysH = ''
-    print('Matriz de adjacência')
-    for j in self.keys:
-      keysH += str(j) + '    ' 
-    print('   ',keysH)
-    for element in self.mtxOfAdj:
-      for element1 in element:
-        lis.append(element1)
-      print(str(self.keys[i]) + ' ' + str(lis))
-      lis = []
-      i += 1
+    # print('Matriz de adjacência')
+    # for j in self.keys:
+    #   keysH += str(j) + '    ' 
+    # print('   ',keysH)
+    # for element in self.mtxOfAdj:
+    #   for element1 in element:
+    #     lis.append(element1)
+    #   print(str(self.keys[i]) + ' ' + str(lis))
+    #   lis = []
+    #   i += 1
     print('Lista de Adjacencia')
     for key in self.listOfAdj:
       print(str(key) + ':', self.listOfAdj[key])
@@ -45,21 +45,15 @@ class Grafo():
   def createGraphMtx(self, obj):
     mtx = []
     for element in obj:
-      if (element[1] in mtx) is False:
-        mtx.append(element[1])
-      if (element[0] in mtx)  is False:
-        mtx.append(element[0])
+      if len(element) > 2:
+        if (element[1] in mtx) is False:
+          mtx.append(element[1])
+        if (element[0] in mtx)  is False:
+          mtx.append(element[0])
+      
+
     mtxAdj = np.zeros((len(mtx), len(mtx)))
     mtx.sort()
-    # for element in obj:
-    #   n0 = element[0]
-    #   n1 = element[1]
-    #   ind0 = mtx.index(n0)
-    #   ind1 = mtx.index(n1)
-    #   mtxAdj[ind0][ind1] += 1
-    #   if self.directed == False:
-    #     mtxAdj[ind1][ind0] += 1
-    # return mtxAdj, mtx
     finalMtx = self.buildMtx(obj, mtx)
     return finalMtx
 
