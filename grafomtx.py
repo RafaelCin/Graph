@@ -1,7 +1,7 @@
 import numpy as np
 
 class GraphMtx():
-  def __init__(self, objiter, directed = False, listaOfAdj = {}, mtxOfAdj = None, keys=None, wheght=None):
+  def __init__(self, objiter, directed = False, listaOfAdj = {}, mtxOfAdj = None, keys=None, wheight=None):
     self.directed = directed
     graphNKeys = self.createGraphMtx(objiter)
     self.mtxOfAdj = graphNKeys[0]
@@ -85,8 +85,6 @@ class GraphMtx():
       auxLis = []
     print(dic)
   
-  # Adicionar um vertice (feito), adcionar uma aresta(feito), se dois vertices estao ligados(feito)
-  # Grau de entrada(feito), grau de saida(feito), adjacente(feito), menor aresta(feito), maior aresta(feito)
 
   def addVer(self, ver, ligVer):
     indxi = 0
@@ -204,20 +202,6 @@ class GraphMtx():
     print(listOfAdjc)
     return listOfAdjc
 
-    
-
-    
-
-
-
-
-
-    
-    
-
-
-      
-    
 
 
 

@@ -1,12 +1,9 @@
 import numpy as np
 
 class Grafo():
-  def __init__(self, objiter, directed = False, listaOfAdj = {}, mtxOfAdj = None, keys=None):
+  def __init__(self, objiter, directed = False, listaOfAdj = {}):
     self.directed = directed
     self.listOfAdj = self.createGraphVtr(objiter)
-    graphNKeys = self.createGraphMtx(objiter)
-    self.mtxOfAdj = graphNKeys[0]
-    self.keys = graphNKeys[1]
   
   def createGraphVtr(self, obj):
     dic = {}
@@ -14,14 +11,26 @@ class Grafo():
       n0 = element[0]
       n1 = element[1]
       if (n0 in dic) is False:
-        dic.update({n0: [n1]})
+        if len(element) > 2:
+          dic.update({n0: [(n1,element[2])]})
+        else:
+          dic.update({n0: [n1]})
       else:
-        dic[n0].append(n1)
+        if len(element) > 2:
+          dic[n0].append((n1,element[2]))
+        else:
+          dic[n0].append(n1)
       if self.directed == False:
         if (n1 in dic) is False:
-          dic.update({n1: [n0]})
+          if len(element) > 2:
+            dic.update({n1: [(n0,element[2])]})
+          else:
+            dic.update({n1: [n0]})
         else:
-          dic[n1].append(n0)
+          if len(element) > 2:
+            dic[n1].append((n0,element[2]))
+          else:
+            dic[n1].append(n0)
     return dic
   def __str__(self):
     lis = []
@@ -42,33 +51,6 @@ class Grafo():
       print(str(key) + ':', self.listOfAdj[key])
     
 
-  def createGraphMtx(self, obj):
-    mtx = []
-    for element in obj:
-      if len(element) > 2:
-        if (element[1] in mtx) is False:
-          mtx.append(element[1])
-        if (element[0] in mtx)  is False:
-          mtx.append(element[0])
-      
-
-    mtxAdj = np.zeros((len(mtx), len(mtx)))
-    mtx.sort()
-    finalMtx = self.buildMtx(obj, mtx)
-    return finalMtx
-
-  def buildMtx(self, obj, mtx):
-    mtxAdj = np.zeros((len(mtx), len(mtx)))
-    for element in obj:
-      n0 = element[0]
-      n1 = element[1]
-      ind0 = mtx.index(n0)
-      ind1 = mtx.index(n1)
-      mtxAdj[ind0][ind1] += 1
-      if self.directed == False:
-        mtxAdj[ind1][ind0] += 1
-    return mtxAdj, mtx
-
   def __getitem__(self, vert):
     listOfTup = []
     lis = self.listOfAdj
@@ -77,50 +59,138 @@ class Grafo():
     print(listOfTup)
     return listOfTup
     
-  def transformVtr(self):
-    dic = {}
-    auxLis = []
-    indxL = 0
-    indxC = 0
-    mtx = self.mtxOfAdj
-    for element in mtx: 
-      for i in element:
-        if i > 0:
-          auxLis.append(self.keys[indxL])
-        indxL +=1
-      dic.update({self.keys[indxC]: auxLis})
-      indxC += 1
-      indxL = 0
-      auxLis = []
-    print(dic)
   def transformMtx(self):
-    mtx = np.zeros((len(self.keys), len(self.keys)))
+    mtx = np.zeros((len(self.listOfAdj), len(self.listOfAdj)))
     lisAdj = self.listOfAdj
     for key in lisAdj:
       for i in lisAdj[key]:
-        mtx[key][i] += 1
+        print(i[1])
+        mtx[key][i[0]] = i[1]
     print(mtx)
 
-# Adicionar um vertice, adcionar uma aresta, se dois vertices estao ligados
-# Grau de entrada, grau de saida, adjacente, menor aresta, maior aresta
-  def addVer(self, ver):
-    lisAdj = self.listOfAdj
-    lisAdj.update({ver: []})
-    if self.directed:
-      lisAdj[self.keys[len(self.keys) - 1]].append(ver)
+  def addVer(self, ver, ver2Lig):
+    if (ver in self.listOfAdj) is False:
+      if (ver2Lig in self.listOfAdj) is True:
+        dic = self.listOfAdj
+        dic.update({ver: [ver2Lig]})
+        if self.directed is False:
+          dic[ver2Lig].append(ver)
+        print(dic)
+      else:
+        print('ver not exist')
     else:
-      lisAdj[self.keys[len(self.keys) - 1]].append(ver)
-      lisAdj[ver].append(self.keys[len(self.keys) - 1])
-    print(lisAdj)
-    
+      print('ver already exists')
+    return ver
+   
+  
+  def addEdge(self, edge, weight = 1):
+    ver1 = edge[0]
+    ver2 = edge[1]
+    if (ver2 in self.listOfAdj[ver1]) is False:
+      if (ver1 in self.listOfAdj) and (ver2 in self.listOfAdj):
+        newDic = self.listOfAdj
+        newDic[ver1].append(ver2)
+        if self.directed is False:
+          newDic[ver2].append(ver1)
+        print(newDic)
+      else:
+        print('Error, cannot add this edge')
+    else:
+      print('edge already exists')
+    return ''
+
+  def ligVer(self, tupleOfVer):
+    lig = False
+    ver1 = tupleOfVer[0]
+    ver2 = tupleOfVer[1]
+    if (ver1 in self.listOfAdj) and (ver2 in self.listOfAdj):
+      if (ver1 in self.listOfAdj[ver2]) or (ver2 in self.listOfAdj[ver1]):
+        lig = True
+    print(lig)
+    return lig
+  
+  def entraceDegree(self, ver):
+    degree = 0
+    dic = self.listOfAdj
+    for element in dic[ver]:
+      # (1,0) apenas para pegar o type tuple
+      if type(element) == type((1,0)):
+        degree += element[1]
+      else:
+        degree += 1
+    print(degree)
+    return degree
+  
+  def exitDegree(self, ver):
+    degree = 0
+    dic = self.listOfAdj
+    for element in dic:
+      for i in dic[element]:
+        if type(i) == type((1,0)):
+          if i[0] == ver:
+            degree += i[1]
+        else:
+          if i == ver:
+            degree += 1
+    print(degree)
+    return degree
+  
+  
+  def biggestEdge(self):
+    biggest = 0
+    dic = self.listOfAdj
+    for element in dic:
+      for i in dic[element]:
+        if type(i) == type((1,0)):
+          if biggest < i[1]:
+            biggest = i[1]
+        else:
+          if biggest < 1:
+            biggest = 1
+    print(biggest)
+    return biggest
+
+  def smallerEdge(self):
+    smaller = self.biggestEdge()
+    dic = self.listOfAdj
+    for element in dic:
+      for i in dic[element]:
+        if type(i) == type((1,0)):
+          if smaller > i[1]:
+            smaller = i[1]
+        else:
+          if smaller > 1:
+            smaller = 1
+    print(smaller)
+    return smaller
+  
+
+  def adjacent(self, ver):
+    dic = self.listOfAdj
+    listOfAdjc = [] 
+    if ver in dic:
+      for element in dic[ver]:
+        if type(element) == type((1,0)):
+          listOfAdjc.append(element[0])
+        else:
+          listOfAdjc.append(element)
+    print(listOfAdjc)
+    return listOfAdjc
+        
     
 
-grafo = Grafo(((0,1),(0,2),(0,3),(1,2),(2,3)))
+grafo = Grafo(((0,1,2),(0,2,7),(0,3,4),(1,2,1),(2,3,12)))
 grafo.__str__()
 grafo.__getitem__(0)
-grafo.transformVtr()
 grafo.transformMtx()
-grafo.addVer(9)
+grafo.addVer(9,0)
+grafo.addEdge((3,1))
+grafo.ligVer((9,1))
+grafo.entraceDegree(0)
+grafo.exitDegree(0)
+grafo.biggestEdge()
+grafo.smallerEdge()
+grafo.adjacent(0)
       
        
     
