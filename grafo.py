@@ -50,6 +50,9 @@ class Grafo():
     for key in self.listOfAdj:
       print(str(key) + ':', self.listOfAdj[key])
     
+  def __repr__(self):
+    v = Grafo(((0,1),(0,2),(0,3),(1,2),(2,3)))
+    return v
 
   def __getitem__(self, vert):
     listOfTup = []
@@ -64,8 +67,10 @@ class Grafo():
     lisAdj = self.listOfAdj
     for key in lisAdj:
       for i in lisAdj[key]:
-        print(i[1])
-        mtx[key][i[0]] = i[1]
+        if type(i) == type((0,1)):
+          mtx[key][i[0]] = i[1]
+        else:
+          mtx[key][i] += 1
     print(mtx)
 
   def addVer(self, ver, ver2Lig):
@@ -176,11 +181,45 @@ class Grafo():
           listOfAdjc.append(element)
     print(listOfAdjc)
     return listOfAdjc
-        
+  
+
+  def widthSearch(self, ver):
+    queue = []
+    width = {}
+    dad = {}
+    
+    queue.append(ver)
+    dad[ver] = None
+    width[ver] = 1
+
+    while len(queue):
+      newVer = queue.pop(0)
+      for neibor in  self.listOfAdj.get(newVer):
+        if not width.get(neibor):
+          queue.append(neibor)
+          width[neibor] = 1
+          dad[neibor] = newVer
+    return dad     
+    
+  def dfs(self, ver):
+    marked = []
+    dad = {}
+    for element in self.listOfAdj[ver]:
+      if (element in marked) is False:
+        self.dfs2(element, dad, marked)
+    print(dad)
+  
+  def dfs2(self, ver, dad, marked):
+    marked.append(ver)
+    for element in self.listOfAdj[ver]:
+      if (element in marked) is False:
+        dad[element] = ver
+        self.dfs2(element, dad, marked)
     
 
-grafo = Grafo(((0,1,2),(0,2,7),(0,3,4),(1,2,1),(2,3,12)))
+grafo = Grafo(((0,1),(0,2),(0,3),(1,2),(2,3)))
 grafo.__str__()
+grafo.__repr__()
 grafo.__getitem__(0)
 grafo.transformMtx()
 grafo.addVer(9,0)
@@ -191,6 +230,9 @@ grafo.exitDegree(0)
 grafo.biggestEdge()
 grafo.smallerEdge()
 grafo.adjacent(0)
+print(grafo.widthSearch(9))
+grafo.dfs(9)
+
       
        
     

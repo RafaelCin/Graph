@@ -83,7 +83,7 @@ class GraphMtx():
       indxC += 1
       indxL = 0
       auxLis = []
-    print(dic)
+    return dic
   
 
   def addVer(self, ver, ligVer):
@@ -188,7 +188,6 @@ class GraphMtx():
       indxL = 0
       indxC += 1
     print(smaller)
-    print(listOfEdges)
     return listOfEdges
 
   def adjecent(self, ver):
@@ -201,6 +200,42 @@ class GraphMtx():
       indx2 += 1
     print(listOfAdjc)
     return listOfAdjc
+  
+  def widthSearch(self, ver):
+    queue = []
+    width = {}
+    dad = {}
+    edge = {}
+
+    queue.append(ver)
+    dad[ver] = None
+    width[ver] = 1
+    
+
+    while len(queue):
+      newVer = queue.pop(0)
+      for neibor in self.transformVtr().get(newVer):
+        if not width.get(neibor):
+          queue.append(neibor)
+          width[neibor] = 1
+          dad[neibor] = newVer
+          
+    return dad
+  
+  def dfs(self, ver):
+    marked = []
+    dad = {}
+    for element in self.transformVtr()[ver]:
+      if (element in marked) is False:
+        self.dfs2(element, dad, marked)
+    print(dad)
+  
+  def dfs2(self, ver, dad, marked):
+    marked.append(ver)
+    for element in self.transformVtr()[ver]:
+      if (element in marked) is False:
+        dad[element] = ver
+        self.dfs2(element, dad, marked)
 
 
 
@@ -208,6 +243,7 @@ class GraphMtx():
 graph = GraphMtx(((0,1,2),(0,2,7),(0,3,4),(1,2,1),(2,3,12)))
 graph.__str__()
 graph.__getitem__(3)
+print(graph.transformVtr())
 graph.addVer(9,0)
 graph.addEdge((2,2))
 graph.verLig(1,2)
@@ -215,4 +251,6 @@ graph.exitDegree(0)
 graph.entranceDeg(0)
 graph.biggestEdge()
 graph.smallerEdge()
-graph.adjecent(0)
+graph.adjecent(2)
+print(graph.widthSearch(9))
+graph.dfs(9)
